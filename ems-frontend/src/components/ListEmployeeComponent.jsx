@@ -8,6 +8,7 @@ const ListEmployeeComponent = () => {
     const navigator = useNavigate();
 
     useEffect(() => { getAllEmployees() }, []);
+    
 
     function getAllEmployees() {
         listEmployees().then((response) => {
@@ -42,6 +43,7 @@ const ListEmployeeComponent = () => {
                         <th>Employee First Name</th>
                         <th>Employee Last Name</th>
                         <th>Employee Email</th>
+                        <th>Employee Department</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -53,6 +55,7 @@ const ListEmployeeComponent = () => {
                                 <td>{employee.firstName}</td>
                                 <td>{employee.lastName}</td>
                                 <td>{employee.email}</td>
+                                <td>{employee.departmentId}</td>
                                 <td>
                                     <button className='btn btn-info' onClick={() => updateEmployee(employee.id)}>Update</button>
                                     <button className='btn btn-danger' onClick={() => removeEmployee(employee.id)} style={{ marginLeft: '10px' }}>Delete</button>
