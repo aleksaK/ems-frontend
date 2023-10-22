@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { deleteEmployee, listEmployees } from '../services/EmployeeService'
 import { useNavigate } from 'react-router-dom'
+import { confirmAlert } from 'react-confirm-alert'
+import 'react-confirm-alert/src/react-confirm-alert.css'
 
 const ListEmployeeComponent = () => {
 
@@ -8,7 +10,7 @@ const ListEmployeeComponent = () => {
     const navigator = useNavigate();
 
     useEffect(() => { getAllEmployees() }, []);
-    
+
 
     function getAllEmployees() {
         listEmployees().then((response) => {
@@ -26,10 +28,25 @@ const ListEmployeeComponent = () => {
         navigator(`/edit-employee/${id}`)
     }
 
-    function removeEmployee(id) {
-        deleteEmployee(id).then(response => getAllEmployees())
-            .catch(error => console.error(error));
-        navigator('/employees');
+    function removeEmployee(id, firstName, lastName) {
+        confirmAlert({
+            title: 'Confirm to delete',
+            message: `Are you sure you want to delete ${firstName} ${lastName} employee?`,
+            buttons: [
+                {
+                    label: 'Yes',
+                    onClick: () => {
+                        deleteEmployee(id).then(() => getAllEmployees())
+                            .catch(error => console.error(error));
+                        navigator('/employees');
+                    }
+                },
+                {
+                    label: 'No',
+                    onClick: () => { navigator('/employees'); }
+                }
+            ]
+        });
     }
 
     return (
@@ -55,10 +72,10 @@ const ListEmployeeComponent = () => {
                                 <td>{employee.firstName}</td>
                                 <td>{employee.lastName}</td>
                                 <td>{employee.email}</td>
-                                <td>{employee.departmentId}</td>
+                                <td>{employee.departmentName}</td>
                                 <td>
                                     <button className='btn btn-info' onClick={() => updateEmployee(employee.id)}>Update</button>
-                                    <button className='btn btn-danger' onClick={() => removeEmployee(employee.id)} style={{ marginLeft: '10px' }}>Delete</button>
+                                    <button className='btn btn-danger' onClick={() => removeEmployee(employee.id, employee.firstName, employee.lastName)} style={{ marginLeft: '10px' }}>Delete</button>
                                 </td>
                             </tr>
                         )

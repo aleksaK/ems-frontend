@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import { listDepartments, removeDepartment } from '../services/DepartmentService';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { confirmAlert } from 'react-confirm-alert'
+import 'react-confirm-alert/src/react-confirm-alert.css'
 
 const ListDepartmentComponent = () => {
 
     const [departments, setDepartments] = useState([]);
+    const navigator = useNavigate();
 
     useEffect(() => { getAllDepartments() }, []);
 
@@ -16,18 +19,26 @@ const ListDepartmentComponent = () => {
         })
     }
 
-    // function createNewDepartment() {
-    //     navigator('/add-department');
-    // }
-
-    // function updateDepartment(id) {
-    //     navigator(`/edit-department/${id}`)
-    // }
-
-    function deleteDepartment(id) {
-        removeDepartment(id)
-            .then(() => getAllDepartments())
-            .catch(error => console.error(error));
+    function deleteDepartment(id, departmentName) {
+        confirmAlert({
+            title: 'Confirm to delete',
+            message: `Are you sure you want to delete ${departmentName}?`,
+            buttons: [
+                {
+                    label: 'Yes',
+                    onClick: () => {
+                        removeDepartment(id)
+                            .then(() => getAllDepartments())
+                            .catch(error => console.error(error));
+                        navigator('/departments');
+                    }
+                },
+                {
+                    label: 'No',
+                    onClick: () => { navigator('/departments'); }
+                }
+            ]
+        });
     }
 
     return (
@@ -52,8 +63,7 @@ const ListDepartmentComponent = () => {
                                 <td>{department.departmentDescription}</td>
                                 <td>
                                     <Link to={`/edit-department/${department.id}`} className='btn btn-info'>Update</Link>
-                                    <Link to='/departments' className='btn btn-danger' style={{ marginLeft: '10px' }} onClick={() => deleteDepartment(department.id)}>Delete</Link>
-                                    {/* <button className='btn btn-danger' onClick={() => removeDepartment(department.id)} style={{ marginLeft: '10px' }}>Delete</button> */}
+                                    <Link to='/departments' className='btn btn-danger' style={{ marginLeft: '10px' }} onClick={() => deleteDepartment(department.id, department.departmentName)}>Delete</Link>
                                 </td>
                             </tr>)
                     }
